@@ -30,4 +30,8 @@ public class ExpenseService {
         Long expenseId = Long.parseLong(id);
         expenseRepository.deleteById(expenseId);
     }
+
+    public List<Expense> getExpensesByUserAndCategory(String userId, String categoryId) {
+        return expenseRepository.findByUserIdAndCategoryId(userId, categoryId);
+    }
 }

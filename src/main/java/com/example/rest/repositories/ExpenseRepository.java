@@ -3,4 +3,8 @@ package com.example.rest.repositories;
 import com.example.rest.models.Expense;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ExpenseRepository extends MongoRepository<Expense, Long> { }
+import java.util.List;
+
+public interface ExpenseRepository extends MongoRepository<Expense, Long> {
+    List<Expense> findByUserIdAndCategoryId(String userId, String categoryId);
+}

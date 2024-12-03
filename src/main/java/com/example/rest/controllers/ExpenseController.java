@@ -1,99 +1,41 @@
 package com.example.rest.controllers;
 
-import com.example.rest.models.User;
-import com.example.rest.models.Category;
 import com.example.rest.models.Expense;
+import com.example.rest.services.ExpenseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/expenses")
 public class ExpenseController {
 
-    private Map<Long, User> users = new HashMap<>();
-    private Map<Long, Category> categories = new HashMap<>();
-    private Map<Long, Expense> records = new HashMap<>();
-    private Long userIdCounter = 1L;
-    private Long categoryIdCounter = 1L;
-    private Long recordIdCounter = 1L;
+    @Autowired
+    private ExpenseService expenseService;
 
-    @PostMapping("/user")
-    public User createUser(@RequestBody User user) {
-        user.setId(userIdCounter++);
-        users.put(user.getId(), user);
-        return user;
+    @GetMapping
+    public List<Expense> getAllExpenses() {
+        return expenseService.getAllExpenses();
     }
 
-    @GetMapping("/users")
-    public Collection<User> getUsers() {
-        return users.values();
+    @PostMapping
+    public Expense createExpense(@RequestBody Expense expense) {
+        return expenseService.saveExpense(expense);
     }
 
-    @DeleteMapping("/user/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
-        users.remove(userId);
+    @GetMapping("/{id}")
+    public Expense getExpenseById(@PathVariable String id) {
+        return expenseService.getExpenseById(id);
     }
 
-    @GetMapping("/user/{userId}")
-    public User getUserById(@PathVariable Long userId) {
-        User user = users.get(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("User with ID " + userId + " not found");
-        } return user;
+    @DeleteMapping("/{id}")
+    public void deleteExpense(@PathVariable String id) {
+        expenseService.deleteExpense(id);
     }
 
-    @PostMapping("/category")
-    public Category createCategory(@RequestBody Category category) {
-        category.setId(categoryIdCounter++);
-        categories.put(category.getId(), category);
-        return category;
-    }
-
-    @GetMapping("/category")
-    public Collection<Category> getCategories() {
-        return categories.values();
-    }
-
-    @DeleteMapping("/category/{categoryId}")
-    public void deleteCategory(@PathVariable Long categoryId) {
-        categories.remove(categoryId);
-    }
-
-    @PostMapping("/record")
-    public Expense createRecord(@RequestBody Expense record) {
-        record.setId(recordIdCounter++);
-        records.put(record.getId(), record);
-        return record;
-    }
-
-    @GetMapping("/record/{recordId}")
-    public Expense getRecord(@PathVariable Long recordId) {
-        return records.get(recordId);
-    }
-
-    @DeleteMapping("/record/{recordId}")
-    public void deleteRecord(@PathVariable Long recordId) {
-        records.remove(recordId);
-    }
-
-    @GetMapping("/record")
-    public Collection<Expense> getRecords(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long categoryId) {
-
-        List<Expense> filteredRecords = new ArrayList<>();
-        for (Expense record : records.values()) {
-            if ((userId == null || record.getUserId().equals(userId)) &&
-                    (categoryId == null || record.getCategoryId().equals(categoryId))) {
-                filteredRecords.add(record);
-            }
-        }
-
-        if (userId == null && categoryId == null) {
-            throw new IllegalArgumentException("At least one filter parameter (userId or categoryId) must be provided.");
-        }
-
-        return filteredRecords;
+    @GetMapping("/user/{userId}/category/{categoryId}")
+    public List<Expense> getExpensesByUserAndCategory(@PathVariable String userId, @PathVariable String categoryId) {
+        return expenseService.getExpensesByUserAndCategory(userId, categoryId);
     }
 }
-
