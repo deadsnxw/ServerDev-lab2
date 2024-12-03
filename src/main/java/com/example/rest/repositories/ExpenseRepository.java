@@ -1,4 +1,4 @@
-package com.example.rest.repository;
+package com.example.rest.repositories;
 
 import com.example.rest.models.Expense;
 import org.springframework.data.mongodb.repository.MongoRepository;
