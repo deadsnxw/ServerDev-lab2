@@ -1,6 +1,11 @@
 package com.example.rest.models;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "records")
 public class Record {
+    @Id
     private Long id;
     private Long userId;
     private Long categoryId;
