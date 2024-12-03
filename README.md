@@ -1,4 +1,4 @@
-# Server Software Development Technologies (SSDT) Laboratory Work №1
+# Server Software Development Technologies (SSDT) Laboratory Work №2
 ## How to start project locally ?
 :heavy_exclamation_mark:Make sure you have installed at least Java 17:heavy_exclamation_mark:
 - Clone this repository  
