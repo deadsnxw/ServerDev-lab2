@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "records")
-public class Record {
+public class Expense {
     @Id
     private Long id;
     private Long userId;
@@ -12,9 +12,9 @@ public class Record {
     private String timestamp;
     private Double amount;
 
-    public Record() {}
+    public Expense() {}
 
-    public Record(Long id, Long userId, Long categoryId, String timestamp, Double amount) {
+    public Expense(Long id, Long userId, Long categoryId, String timestamp, Double amount) {
         this.id = id;
         this.userId = userId;
         this.categoryId = categoryId;

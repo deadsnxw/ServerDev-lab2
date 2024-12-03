@@ -2,7 +2,7 @@ package com.example.rest.controllers;
 
 import com.example.rest.models.User;
 import com.example.rest.models.Category;
-import com.example.rest.models.Record;
+import com.example.rest.models.Expense;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -12,7 +12,7 @@ public class ExpenseController {
 
     private Map<Long, User> users = new HashMap<>();
     private Map<Long, Category> categories = new HashMap<>();
-    private Map<Long, Record> records = new HashMap<>();
+    private Map<Long, Expense> records = new HashMap<>();
     private Long userIdCounter = 1L;
     private Long categoryIdCounter = 1L;
     private Long recordIdCounter = 1L;
@@ -60,14 +60,14 @@ public class ExpenseController {
     }
 
     @PostMapping("/record")
-    public Record createRecord(@RequestBody Record record) {
+    public Expense createRecord(@RequestBody Expense record) {
         record.setId(recordIdCounter++);
         records.put(record.getId(), record);
         return record;
     }
 
     @GetMapping("/record/{recordId}")
-    public Record getRecord(@PathVariable Long recordId) {
+    public Expense getRecord(@PathVariable Long recordId) {
         return records.get(recordId);
     }
 
@@ -77,12 +77,12 @@ public class ExpenseController {
     }
 
     @GetMapping("/record")
-    public Collection<Record> getRecords(
+    public Collection<Expense> getRecords(
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId) {
 
-        List<Record> filteredRecords = new ArrayList<>();
-        for (Record record : records.values()) {
+        List<Expense> filteredRecords = new ArrayList<>();
+        for (Expense record : records.values()) {
             if ((userId == null || record.getUserId().equals(userId)) &&
                     (categoryId == null || record.getCategoryId().equals(categoryId))) {
                 filteredRecords.add(record);
