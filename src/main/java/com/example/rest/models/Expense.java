@@ -1,16 +1,31 @@
 package com.example.rest.models;
 
-public class Record {
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "expenses")
+public class Expense {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @Column(name = "category_id", nullable = false)
     private Long categoryId;
-    private String timestamp;
+
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
+
+    @Column(nullable = false)
     private Double amount;
 
-    public Record() {}
+    public Expense() {}
 
-    public Record(Long id, Long userId, Long categoryId, String timestamp, Double amount) {
-        this.id = id;
+    public Expense(Long userId, Long categoryId, LocalDateTime timestamp, Double amount) {
         this.userId = userId;
         this.categoryId = categoryId;
         this.timestamp = timestamp;
@@ -41,11 +56,11 @@ public class Record {
         this.categoryId = categoryId;
     }
 
-    public String getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -57,4 +72,3 @@ public class Record {
         this.amount = amount;
     }
 }
-
