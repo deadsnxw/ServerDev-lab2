@@ -24,7 +24,6 @@ public class AccountController {
     public ResponseEntity<String> deposit(@PathVariable Long userId, @RequestBody Map<String, Double> request) {
         Double amount = request.get("amount");
 
-        // Проверка на валидность суммы
         if (amount == null || amount <= 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid deposit amount");
         }
@@ -39,7 +38,6 @@ public class AccountController {
 
     @PostMapping("/expense")
     public ResponseEntity<String> createExpense(@RequestParam Long userId, @RequestParam Long categoryId, @RequestParam Double amount) {
-        // Проверка на валидность суммы
         if (amount == null || amount <= 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid expense amount");
         }
