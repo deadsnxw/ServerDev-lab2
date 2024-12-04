@@ -1,99 +1,59 @@
 package com.example.rest.controllers;
 
-import com.example.rest.models.User;
-import com.example.rest.models.Category;
 import com.example.rest.models.Expense;
+import com.example.rest.repositories.ExpenseRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/expenses")
 public class ExpenseController {
 
-    private Map<Long, User> users = new HashMap<>();
-    private Map<Long, Category> categories = new HashMap<>();
-    private Map<Long, Expense> records = new HashMap<>();
-    private Long userIdCounter = 1L;
-    private Long categoryIdCounter = 1L;
-    private Long recordIdCounter = 1L;
+    private final ExpenseRepository expenseRepository;
 
-    @PostMapping("/user")
-    public User createUser(@RequestBody User user) {
-        user.setId(userIdCounter++);
-        users.put(user.getId(), user);
-        return user;
+    public ExpenseController(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
     }
 
-    @GetMapping("/users")
-    public Collection<User> getUsers() {
-        return users.values();
+    @GetMapping
+    public List<Expense> getAllExpenses() {
+        return expenseRepository.findAll();
     }
 
-    @DeleteMapping("/user/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
-        users.remove(userId);
+    @GetMapping("/{id}")
+    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id) {
+        return expenseRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/user/{userId}")
-    public User getUserById(@PathVariable Long userId) {
-        User user = users.get(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("User with ID " + userId + " not found");
-        } return user;
+    @PostMapping
+    public Expense createExpense(@RequestBody Expense expense) {
+        return expenseRepository.save(expense);
     }
 
-    @PostMapping("/category")
-    public Category createCategory(@RequestBody Category category) {
-        category.setId(categoryIdCounter++);
-        categories.put(category.getId(), category);
-        return category;
+    @PutMapping("/{id}")
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
+        return expenseRepository.findById(id)
+                .map(expense -> {
+                    expense.setUserId(updatedExpense.getUserId());
+                    expense.setCategoryId(updatedExpense.getCategoryId());
+                    expense.setTimestamp(updatedExpense.getTimestamp());
+                    expense.setAmount(updatedExpense.getAmount());
+                    expenseRepository.save(expense);
+                    return ResponseEntity.ok(expense);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/category")
-    public Collection<Category> getCategories() {
-        return categories.values();
-    }
-
-    @DeleteMapping("/category/{categoryId}")
-    public void deleteCategory(@PathVariable Long categoryId) {
-        categories.remove(categoryId);
-    }
-
-    @PostMapping("/record")
-    public Expense createRecord(@RequestBody Expense record) {
-        record.setId(recordIdCounter++);
-        records.put(record.getId(), record);
-        return record;
-    }
-
-    @GetMapping("/record/{recordId}")
-    public Expense getRecord(@PathVariable Long recordId) {
-        return records.get(recordId);
-    }
-
-    @DeleteMapping("/record/{recordId}")
-    public void deleteRecord(@PathVariable Long recordId) {
-        records.remove(recordId);
-    }
-
-    @GetMapping("/record")
-    public Collection<Expense> getRecords(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long categoryId) {
-
-        List<Expense> filteredRecords = new ArrayList<>();
-        for (Expense record : records.values()) {
-            if ((userId == null || record.getUserId().equals(userId)) &&
-                    (categoryId == null || record.getCategoryId().equals(categoryId))) {
-                filteredRecords.add(record);
-            }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
+        if (expenseRepository.existsById(id)) {
+            expenseRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
         }
-
-        if (userId == null && categoryId == null) {
-            throw new IllegalArgumentException("At least one filter parameter (userId or categoryId) must be provided.");
-        }
-
-        return filteredRecords;
+        return ResponseEntity.notFound().build();
     }
 }
-
